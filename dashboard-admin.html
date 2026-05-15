@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard – INKINDO JATIM Event Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+:root{
+  --navy:#0d1b5e;--navy-dark:#07112e;--navy-mid:#152575;
+  --blue:#1565d8;--blue-light:#2d80f2;
+  --bg:#eef0f4;--white:#fff;
+  --txt:#1a1a2e;--txt-mid:#4a5568;--txt-light:#718096;
+  --green:#2ecb7b;--red:#ef4444;--orange:#f59e0b;--purple:#7c3aed;
+  --font:'Plus Jakarta Sans',sans-serif;
+  --nav-h:88px;
+  --sidebar-w:260px;
+}
+
+/* ══ RESET & BASE ══ */
+body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;display:flex;flex-direction:column;overflow-x:hidden}
+
+/* ══════════════════════════════════════
+   NAVBAR  — matches Figma exactly
+   • white pill/card, rounded bottom corners
+   • logo image 68×68 left
+   • nav links centred
+   • Dashboard pill + logout icon right
+══════════════════════════════════════ */
+nav{
+  position:sticky;top:0;z-index:300;
+  background:var(--white);
+  /* rounded bottom corners = pill look */
+  border-radius:0 0 32px 32px;
+  box-shadow:0 4px 28px rgba(0,0,0,.10);
+  height:var(--nav-h);
+  display:flex;align-items:center;
+  padding:0 48px;
+  gap:0;
+}
+
+/* ── Logo ── */
+.logo{
+  display:flex;align-items:center;gap:12px;
+  text-decoration:none;flex-shrink:0;
+  /* logo is tall – let it overflow nav height a bit like Figma */
+  margin-top:4px;
+}
+.logo-img{
+  width:68px;height:68px;
+  object-fit:contain;display:block;flex-shrink:0;
+}
+.logo-text{display:flex;flex-direction:column;line-height:1}
+.logo-text .brand{
+  font-size:16px;font-weight:800;color:var(--navy);
+  letter-spacing:.3px;line-height:1.1;
+}
+.logo-text .sub{
+  font-size:9px;font-weight:700;
+  color:var(--navy);opacity:.55;
+  letter-spacing:3px;text-transform:uppercase;
+  margin-top:2px;
+}
+
+/* ── Nav links (centred) ── */
+.nav-links{
+  display:flex;gap:44px;list-style:none;
+  /* push to true centre between logo and right cluster */
+  flex:1;justify-content:center;
+}
+.nav-links a{
+  text-decoration:none;font-size:15px;font-weight:500;
+  color:var(--txt-mid);transition:color .2s;
+}
+.nav-links a:hover{color:var(--navy)}
+
+/* ── Right cluster ── */
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+
+/* Dashboard pill button */
+.btn-dashboard-pill{
+  display:flex;align-items:center;gap:8px;
+  border:1.5px solid #d0d8ea;border-radius:50px;
+  background:var(--white);
+  padding:9px 20px 9px 14px;
+  font-family:var(--font);font-size:14px;font-weight:600;
+  color:var(--txt);cursor:pointer;transition:all .2s;
+  white-space:nowrap;
+}
+.btn-dashboard-pill:hover{border-color:var(--navy);color:var(--navy)}
+.btn-dashboard-pill svg{flex-shrink:0}
+
+/* Logout icon button */
+.btn-logout-icon{
+  display:flex;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:50%;
+  background:none;border:none;cursor:pointer;
+  color:var(--txt-mid);transition:all .2s;
+}
+.btn-logout-icon:hover{color:var(--red);background:#fff1f2}
+
+/* ══ APP SHELL ══ */
+.app-body{display:flex;flex:1;min-height:calc(100vh - var(--nav-h))}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:var(--sidebar-w);flex-shrink:0;
+  background:linear-gradient(175deg,#07112e 0%,#0d1b5e 55%,#152575 100%);
+  display:flex;flex-direction:column;
+  padding:24px 14px 20px;
+  position:sticky;top:var(--nav-h);
+  height:calc(100vh - var(--nav-h));overflow-y:auto;
+}
+.sidebar-profile{
+  display:flex;align-items:center;gap:13px;
+  background:rgba(255,255,255,.09);border-radius:16px;
+  padding:15px 14px;margin-bottom:28px;
+}
+.profile-avatar{
+  width:46px;height:46px;border-radius:12px;
+  background:var(--blue);display:flex;align-items:center;justify-content:center;
+  font-size:19px;font-weight:800;color:white;flex-shrink:0;
+}
+.profile-name{font-size:15px;font-weight:700;color:white;line-height:1.2}
+.profile-role{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px}
+
+.nav-menu{list-style:none;display:flex;flex-direction:column;gap:3px;flex:1}
+.nav-btn{
+  width:100%;display:flex;align-items:center;gap:12px;
+  background:none;border:none;border-radius:12px;
+  padding:13px 15px;cursor:pointer;
+  font-family:var(--font);font-size:14px;font-weight:600;
+  color:rgba(255,255,255,.52);transition:all .22s;text-align:left;
+}
+.nav-btn svg{flex-shrink:0;opacity:.65;transition:opacity .2s}
+.nav-btn:hover{background:rgba(255,255,255,.09);color:rgba(255,255,255,.88)}
+.nav-btn:hover svg{opacity:.88}
+.nav-btn.active{background:var(--blue);color:white;box-shadow:0 4px 18px rgba(21,101,216,.45)}
+.nav-btn.active svg{opacity:1}
+
+.sidebar-divider{height:1px;background:rgba(255,255,255,.1);margin:16px 0}
+.btn-keluar{
+  width:100%;display:flex;align-items:center;gap:10px;
+  background:none;border:none;border-radius:10px;
+  padding:12px 15px;cursor:pointer;
+  font-family:var(--font);font-size:13px;font-weight:600;
+  color:rgba(255,255,255,.35);transition:all .2s;
+}
+.btn-keluar:hover{color:#f87171;background:rgba(239,68,68,.12)}
+
+/* ══ MAIN ══ */
+.main{flex:1;padding:28px 32px;overflow-x:hidden;min-width:0}
+
+/* ══ PAGES ══ */
+.page{display:none;animation:fadeIn .22s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ PAGE BANNER ══ */
+.page-banner{
+  background:linear-gradient(135deg,var(--navy-dark) 0%,#1a2d8f 55%,var(--navy-mid) 100%);
+  border-radius:20px;padding:34px 40px;margin-bottom:26px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.page-banner::before{content:'';position:absolute;top:-50px;right:-50px;width:220px;height:220px;background:rgba(45,128,242,.12);border-radius:50%;pointer-events:none}
+.page-banner::after{content:'';position:absolute;bottom:-40px;left:30%;width:140px;height:140px;background:rgba(255,255,255,.04);border-radius:50%;pointer-events:none}
+.banner-title{font-size:34px;font-weight:800;color:white;line-height:1.1}
+.banner-sub{font-size:14px;color:rgba(255,255,255,.58);margin-top:7px}
+.admin-chip{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.14);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.22);border-radius:12px;
+  padding:10px 18px;position:relative;z-index:1;flex-shrink:0;
+}
+.admin-chip-dot{width:32px;height:32px;border-radius:9px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:white}
+.admin-chip-name{font-size:14px;font-weight:700;color:white}
+
+/* ══ STATS ══ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px}
+.stat-card{
+  background:white;border-radius:18px;padding:26px 22px;
+  display:flex;flex-direction:column;align-items:center;gap:9px;
+  box-shadow:0 2px 14px rgba(0,0,0,.055);
+  cursor:default;transition:transform .2s,box-shadow .2s;
+}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(0,0,0,.1)}
+.stat-icon-wrap{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center}
+.stat-lbl{font-size:10.5px;font-weight:700;letter-spacing:1.8px;color:var(--txt-light);text-transform:uppercase;text-align:center}
+.stat-val{font-size:40px;font-weight:800;color:var(--txt);line-height:1}
+
+/* ══ SECTION CARD ══ */
+.section-card{background:white;border-radius:18px;padding:26px 28px;box-shadow:0 2px 14px rgba(0,0,0,.055)}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+.section-head-title{font-size:19px;font-weight:800;color:var(--txt)}
+.btn-primary{background:var(--blue);color:white;border:none;padding:10px 22px;border-radius:10px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:background .2s;white-space:nowrap}
+.btn-primary:hover{background:var(--navy)}
+
+/* ══ TABLE ══ */
+.tbl{width:100%;border-collapse:collapse}
+.tbl thead tr{background:#f7f8fb}
+.tbl th{padding:11px 16px;text-align:left;font-size:10.5px;font-weight:700;letter-spacing:1.8px;color:var(--txt-light);text-transform:uppercase}
+.tbl td{padding:15px 16px;border-bottom:1px solid #f1f3f7;vertical-align:middle}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr:hover td{background:#fafbfd}
+.cell-participant{display:flex;align-items:center;gap:12px}
+.avatar{width:40px;height:40px;border-radius:10px;background:#e8ecf5;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--txt-mid);flex-shrink:0}
+.pname{font-size:14px;font-weight:700;color:var(--txt)}
+.pid{font-size:11px;color:var(--txt-light);margin-top:1px}
+.ename{font-size:13px;font-weight:700;color:var(--txt)}
+.edate{font-size:12px;color:var(--txt-light);margin-top:2px}
+
+/* ══ BADGES ══ */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700}
+.badge-pending{background:#fef3c7;color:#92400e}
+.badge-pending::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--orange);flex-shrink:0}
+.badge-verified{background:#d1fae5;color:#065f46}
+.badge-verified::before{content:'✓';font-size:11px}
+.cat-badge{display:inline-block;padding:3px 11px;border-radius:12px;font-size:11px;font-weight:700}
+.cat-seminar{background:#dbeafe;color:#1d4ed8}
+.cat-workshop{background:#f3e8ff;color:#7c3aed}
+.cat-musyawarah{background:#d1fae5;color:#065f46}
+.cat-sertifikasi{background:#fef3c7;color:#92400e}
+
+/* ══ ACTION BUTTONS ══ */
+.action-row{display:flex;gap:8px;align-items:center}
+.btn-file{display:flex;align-items:center;gap:7px;border:1.5px dashed #c5d0dc;border-radius:9px;padding:8px 14px;background:none;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:600;color:var(--txt-mid);transition:all .2s;white-space:nowrap}
+.btn-file:hover{border-color:var(--blue);color:var(--blue)}
+.btn-approve{width:34px;height:34px;border-radius:8px;border:none;background:#d1fae5;color:#065f46;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
+.btn-approve:hover{background:#059669;color:white}
+.btn-reject{width:34px;height:34px;border-radius:8px;border:none;background:#fee2e2;color:#991b1b;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s}
+.btn-reject:hover{background:var(--red);color:white}
+.btn-edit{width:34px;height:34px;border-radius:8px;border:1px solid #dbeafe;background:#eff6ff;color:var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.btn-edit:hover{background:var(--blue);color:white;border-color:var(--blue)}
+.btn-del{width:34px;height:34px;border-radius:8px;border:1px solid #fee2e2;background:#fff5f5;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.btn-del:hover{background:var(--red);color:white;border-color:var(--red)}
+.reg-pill{display:inline-flex;align-items:center;gap:6px;background:#f0f4ff;border:1px solid #c5d5ff;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;color:var(--blue)}
+
+/* ══ CHECK-IN ══ */
+.session-bar{background:white;border-radius:16px;padding:17px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:26px;box-shadow:0 2px 14px rgba(0,0,0,.055);gap:12px;flex-wrap:wrap}
+.session-info{display:flex;align-items:center;gap:13px}
+.session-icon-wrap{width:44px;height:44px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.session-label{font-size:14px;font-weight:700;color:var(--txt)}
+.session-sub{font-size:10.5px;color:var(--txt-light);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
+.session-select{border:1.5px solid #e5eaf2;border-radius:10px;padding:10px 16px;background:white;outline:none;font-family:var(--font);font-size:13px;font-weight:600;color:var(--txt-mid);cursor:pointer}
+.checkin-cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.scanner-box{background:linear-gradient(135deg,#07112e 0%,#0d1b5e 55%,#152575 100%);border-radius:20px;padding:26px;display:flex;flex-direction:column;align-items:center;gap:18px;min-height:460px}
+.qr-frame{width:100%;max-width:260px;aspect-ratio:1;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.corner{position:absolute;width:26px;height:26px}
+.corner.tl{top:16px;left:16px;border-top:3px solid #2d80f2;border-left:3px solid #2d80f2;border-radius:4px 0 0 0}
+.corner.tr{top:16px;right:16px;border-top:3px solid #2d80f2;border-right:3px solid #2d80f2;border-radius:0 4px 0 0}
+.corner.bl{bottom:16px;left:16px;border-bottom:3px solid #2d80f2;border-left:3px solid #2d80f2;border-radius:0 0 0 4px}
+.corner.br{bottom:16px;right:16px;border-bottom:3px solid #2d80f2;border-right:3px solid #2d80f2;border-radius:0 0 4px 0}
+.scan-beam{position:absolute;left:16px;right:16px;height:2px;background:linear-gradient(90deg,transparent,#2d80f2,transparent);animation:beam 2.6s ease-in-out infinite}
+@keyframes beam{0%,100%{top:16px}50%{top:calc(100% - 18px)}}
+.scanner-title{font-size:12px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:1.5px;text-transform:uppercase}
+.scanner-drop{width:100%;max-width:260px;background:rgba(255,255,255,.06);border:1px dashed rgba(255,255,255,.2);border-radius:12px;padding:18px;text-align:center}
+.scanner-drop-txt{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:1.2px;text-transform:uppercase}
+.checkin-right{display:flex;flex-direction:column;gap:18px}
+.manual-card{background:white;border-radius:18px;padding:22px;box-shadow:0 2px 14px rgba(0,0,0,.055)}
+.manual-card-title{font-size:15px;font-weight:800;color:var(--txt);margin-bottom:14px}
+.input-group{display:flex;gap:10px}
+.ticket-inp{flex:1;padding:12px 16px;border:1.5px solid #e5eaf2;border-radius:12px;font-family:var(--font);font-size:14px;color:var(--txt);background:#f8f9fc;outline:none;transition:border-color .2s}
+.ticket-inp:focus{border-color:var(--blue);background:white}
+.ticket-inp::placeholder{color:#b8c0cc}
+.btn-search{width:48px;height:48px;border-radius:12px;border:none;background:var(--blue);color:white;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.btn-search:hover{background:var(--navy)}
+.confirm-result{background:white;border-radius:18px;padding:24px;box-shadow:0 2px 14px rgba(0,0,0,.055);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:180px;border:2px solid transparent;transition:border-color .3s}
+.confirm-result.ok{border-color:var(--green)}
+.confirm-result.fail{border-color:var(--red)}
+.result-icon{width:62px;height:62px;border-radius:50%;background:#f0f2f7;display:flex;align-items:center;justify-content:center;transition:background .3s}
+.result-title{font-size:15px;font-weight:800;color:var(--txt);text-align:center}
+.result-sub{font-size:13px;color:var(--txt-light);text-align:center;line-height:1.65;max-width:280px}
+
+/* ══ MODAL ══ */
+.overlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(5,10,40,.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
+.overlay.open{display:flex}
+.modal{background:white;border-radius:22px;padding:34px;width:100%;max-width:520px;box-shadow:0 32px 80px rgba(0,0,0,.38);animation:modalIn .26s cubic-bezier(.34,1.56,.64,1) both;max-height:90vh;overflow-y:auto}
+@keyframes modalIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
+.modal-ttl{font-size:21px;font-weight:800;color:var(--txt)}
+.btn-close-modal{width:36px;height:36px;border-radius:50%;background:#fee2e2;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--red);font-size:17px;transition:background .2s}
+.btn-close-modal:hover{background:var(--red);color:white}
+.form-fld{margin-bottom:18px}
+.form-fld label{display:block;font-size:11px;font-weight:700;color:var(--txt-mid);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:7px}
+.form-fld input,.form-fld select{width:100%;padding:12px 15px;border:1.5px solid #e5eaf2;border-radius:11px;font-family:var(--font);font-size:14px;color:var(--txt);background:#f8f9fc;outline:none;transition:border-color .2s}
+.form-fld input:focus,.form-fld select:focus{border-color:var(--blue);background:white}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.modal-actions{display:flex;gap:12px;margin-top:6px}
+.btn-mcancel{flex:1;padding:13px;border:1.5px solid #e5eaf2;border-radius:11px;background:none;font-family:var(--font);font-size:14px;font-weight:700;color:var(--txt-mid);cursor:pointer;transition:all .2s}
+.btn-mcancel:hover{border-color:#bbb}
+.btn-mconfirm{flex:1;padding:13px;border:none;border-radius:11px;background:var(--blue);color:white;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-mconfirm:hover{background:var(--navy)}
+.btn-mconfirm.danger{background:var(--red)}
+.btn-mconfirm.danger:hover{background:#b91c1c}
+.proof-area{background:#f8f9fc;border:2px dashed #dde3ec;border-radius:14px;padding:36px 24px;text-align:center;margin-bottom:18px}
+.proof-file-badge{display:inline-block;margin-top:14px;padding:10px 18px;background:#eff6ff;border-radius:10px;font-size:13px;font-weight:700;color:var(--blue)}
+.del-icon-wrap{width:64px;height:64px;border-radius:50%;background:#fee2e2;margin:0 auto 18px;display:flex;align-items:center;justify-content:center}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:26px;right:26px;z-index:9999;padding:13px 22px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.28);transform:translateY(120px);opacity:0;transition:all .38s cubic-bezier(.34,1.56,.64,1);max-width:310px;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast-info{background:var(--navy);color:white}
+.toast-success{background:#059669;color:white}
+.toast-error{background:var(--red);color:white}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:1100px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:900px){.checkin-cols{grid-template-columns:1fr}}
+@media(max-width:768px){
+  nav{padding:0 20px;border-radius:0 0 20px 20px}
+  .main{padding:16px 14px}
+  .banner-title{font-size:24px}
+  .nav-links{display:none}
+  .page-banner{flex-direction:column;align-items:flex-start;gap:16px}
+}
+@media(max-width:600px){
+  :root{--sidebar-w:0px}
+  .sidebar{display:none}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     NAVBAR — sama persis dengan Figma
+     Logo besar kiri | Nav tengah | Dashboard pill + logout kanan
+     Border-radius bawah = pill look
+══════════════════════════════════════ -->
+<nav>
+
+  <!-- LOGO -->
+  <a class="logo" href="index.html">
+    <img src="logoinkindo.png" alt="INKINDO Jawa Timur" class="logo-img">
+    <div class="logo-text">
+      <span class="brand">INKINDO<br>JAWA TIMUR</span>
+      <span class="sub">Event Hub</span>
+    </div>
+  </a>
+
+  <!-- NAV LINKS (centred) -->
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#events">Events</a></li>
+    <li><a href="index.html#calendar">Calendar</a></li>
+    <li><a href="index.html#contact">Contact Us</a></li>
+  </ul>
+
+  <!-- RIGHT: Dashboard pill + logout -->
+  <div class="nav-right">
+    <!-- Dashboard pill — ikon user + teks "Dashboard" -->
+    <button class="btn-dashboard-pill">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+      Dashboard
+    </button>
+
+    <!-- Logout icon — ikon pintu keluar -->
+    <button class="btn-logout-icon" title="Keluar" onclick="confirmLogout()">
+      <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+    </button>
+  </div>
+
+</nav>
+
+<!-- ══ APP SHELL ══ -->
+<div class="app-body">
+
+  <!-- ══════ SIDEBAR ══════ -->
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="profile-avatar">A</div>
+      <div>
+        <div class="profile-name">Dashboard</div>
+        <div class="profile-role">INKINDO ADMIN</div>
+      </div>
+    </div>
+
+    <ul class="nav-menu">
+      <li>
+        <button class="nav-btn active" id="nb-overview" onclick="switchPage('overview')">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          Overview
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" id="nb-events" onclick="switchPage('events')">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4M8 2v4M3 10h18"/>
+          </svg>
+          Manajemen Event
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" id="nb-checkin" onclick="switchPage('checkin')">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+            <path d="M14 17h7M17 14v7"/>
+          </svg>
+          Verifikasi Check-In
+        </button>
+      </li>
+      <li>
+        <button class="nav-btn" id="nb-payment" onclick="switchPage('payment')">
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          Konfirmasi Pembayaran
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-divider"></div>
+    <button class="btn-keluar" onclick="confirmLogout()">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      Keluar Sistem
+    </button>
+  </aside>
+
+  <!-- ══════ MAIN CONTENT ══════ -->
+  <main class="main">
+
+    <!-- ─── PAGE: OVERVIEW ─── -->
+    <div class="page active" id="page-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap" style="background:#eff6ff">
+            <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#1565d8" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+          </div>
+          <div class="stat-lbl">Total Event</div>
+          <div class="stat-val" id="sv-total-event">6</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap" style="background:#f3e8ff">
+            <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#7c3aed" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-lbl">Total Anggota</div>
+          <div class="stat-val">1240</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap" style="background:#d1fae5">
+            <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#059669" stroke-width="2">
+              <path d="M20 12V22H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <div class="stat-lbl">Pendaftar Aktif</div>
+          <div class="stat-val">342</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon-wrap" style="background:#fff1f2">
+            <svg width="26" height="26" fill="none" viewBox="0 0 24 24" stroke="#e11d48" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-lbl">Perlu Verifikasi</div>
+          <div class="stat-val" id="sv-perlu-verif">2</div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">Daftar Verifikasi Pembayaran</div>
+          <button class="btn-primary" onclick="switchPage('payment')">Lihat Semua Data</button>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Peserta</th><th>Event &amp; Waktu</th>
+              <th>Bukti Transfer</th><th>Status</th><th>Tindakan</th>
+            </tr>
+          </thead>
+          <tbody id="ov-payment-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── PAGE: MANAJEMEN EVENT ─── -->
+    <div class="page" id="page-events">
+      <div class="page-banner">
+        <div>
+          <div class="banner-title">Manajemen Event</div>
+          <div class="banner-sub">Kelola Daftar Event Seminar, Workshop Dan Musyawarah</div>
+        </div>
+        <div class="admin-chip">
+          <div class="admin-chip-dot">R</div>
+          <span class="admin-chip-name">Admin Ridho</span>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">Katalog Event</div>
+          <button class="btn-primary" onclick="openCreateEvent()">Buat Event Baru</button>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Informasi Event</th><th>Event &amp; Waktu</th>
+              <th>Registrasi</th><th>Aksi Panel</th>
+            </tr>
+          </thead>
+          <tbody id="ev-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ─── PAGE: VERIFIKASI CHECK-IN ─── -->
+    <div class="page" id="page-checkin">
+      <div class="page-banner">
+        <div>
+          <div class="banner-title">Pusat Verifikasi Hadir</div>
+          <div class="banner-sub">Scan QR Code e-Tiket atau masukkan ID Tiket secara manual untuk check-in</div>
+        </div>
+        <div class="admin-chip">
+          <div class="admin-chip-dot">R</div>
+          <span class="admin-chip-name">Admin Ridho</span>
+        </div>
+      </div>
+
+      <div class="session-bar">
+        <div class="session-info">
+          <div class="session-icon-wrap">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#1565d8" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </div>
+          <div>
+            <div class="session-label">SESI CHECK-IN AKTIF</div>
+            <div class="session-sub">Pilih event yang sedang berlangsung saat ini</div>
+          </div>
+        </div>
+        <select class="session-select" id="ci-event-select">
+          <option value="">Semua Kategori</option>
+          <option>Workshop Manajemen Proyek Konstruksi 2026</option>
+          <option>Seminar Nasional Jasa Konstruksi Digital</option>
+          <option>Musyawarah Provinsi INKINDO Jawa Timur</option>
+        </select>
+      </div>
+
+      <div class="checkin-cols">
+        <div class="scanner-box">
+          <div class="qr-frame">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+            <div class="scan-beam"></div>
+            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="rgba(45,128,242,.45)" stroke-width="1.5">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+              <circle cx="17.5" cy="17.5" r="2"/>
+            </svg>
+          </div>
+          <div class="scanner-title">Kamera Scanner Aktif</div>
+          <div class="scanner-drop">
+            <div class="scanner-drop-txt">Arahkan QR Kesini</div>
+          </div>
+        </div>
+
+        <div class="checkin-right">
+          <div class="manual-card">
+            <div class="manual-card-title">Input ID Tiket Manual</div>
+            <div class="input-group">
+              <input type="text" class="ticket-inp" id="ticket-inp" placeholder="TKT-101">
+              <button class="btn-search" onclick="doSearchTicket()">
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+                  <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="confirm-result" id="ci-result">
+            <div class="result-icon" id="ci-result-icon">
+              <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#b8c0cc" stroke-width="1.8">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <div class="result-title" id="ci-result-title">Konfirmasi Data Peserta</div>
+            <div class="result-sub" id="ci-result-sub">
+              Data peserta akan muncul disini setelah melakukan scan / input kode
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── PAGE: KONFIRMASI PEMBAYARAN ─── -->
+    <div class="page" id="page-payment">
+      <div class="page-banner">
+        <div>
+          <div class="banner-title">Verifikasi Pembayaran</div>
+          <div class="banner-sub">Setujui atau Tolak Bukti Transfer Pembayaran dari Peserta</div>
+        </div>
+        <div class="admin-chip">
+          <div class="admin-chip-dot">R</div>
+          <span class="admin-chip-name">Admin Ridho</span>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-head-title">Daftar Verifikasi Pembayaran</div>
+          <select
+            style="padding:9px 14px;border:1.5px solid #e5eaf2;border-radius:10px;font-family:var(--font);font-size:13px;outline:none;color:var(--txt-mid);background:white;cursor:pointer"
+            onchange="filterPay(this.value)">
+            <option value="">Semua Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Verified">Verified</option>
+          </select>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Peserta</th><th>Event &amp; Waktu</th>
+              <th>Bukti Transfer</th><th>Status</th><th>Tindakan</th>
+            </tr>
+          </thead>
+          <tbody id="pay-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ MODAL: Bukti Transfer ══ -->
+<div class="overlay" id="modal-proof" onclick="overlayClose(event,'modal-proof')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-ttl">Bukti Transfer</div>
+      <button class="btn-close-modal" onclick="closeModal('modal-proof')">✕</button>
+    </div>
+    <div class="proof-area">
+      <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="#c5d0dc" stroke-width="1.5" style="margin:0 auto 10px;display:block">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <path d="M3 9h18M9 21V9"/>
+      </svg>
+      <div style="font-size:13px;color:var(--txt-light)">Bukti transfer pembayaran dari peserta</div>
+      <div class="proof-file-badge">📎 bukti_transfer_<span id="proof-fname">—</span></div>
+    </div>
+    <div style="background:#f7f8fb;border-radius:12px;padding:16px;margin-bottom:20px">
+      <div style="font-size:11px;font-weight:700;color:var(--txt-light);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px">Detail Peserta</div>
+      <div id="proof-detail" style="font-size:14px;color:var(--txt);line-height:2"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-mcancel" onclick="closeModal('modal-proof')">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Buat / Edit Event ══ -->
+<div class="overlay" id="modal-event" onclick="overlayClose(event,'modal-event')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-ttl" id="modal-event-title">Buat Event Baru</div>
+      <button class="btn-close-modal" onclick="closeModal('modal-event')">✕</button>
+    </div>
+    <div class="form-fld">
+      <label>Nama Event</label>
+      <input type="text" id="ev-name" placeholder="Masukkan nama event">
+    </div>
+    <div class="form-row2">
+      <div class="form-fld">
+        <label>Kategori</label>
+        <select id="ev-cat">
+          <option>Seminar</option><option>Workshop</option>
+          <option>Musyawarah</option><option>Sertifikasi</option>
+        </select>
+      </div>
+      <div class="form-fld">
+        <label>Tanggal</label>
+        <input type="date" id="ev-date">
+      </div>
+    </div>
+    <div class="form-row2">
+      <div class="form-fld">
+        <label>Jam Mulai</label>
+        <input type="time" id="ev-start">
+      </div>
+      <div class="form-fld">
+        <label>Jam Selesai</label>
+        <input type="time" id="ev-end">
+      </div>
+    </div>
+    <div class="form-fld">
+      <label>Lokasi / Tempat</label>
+      <input type="text" id="ev-loc" placeholder="Nama gedung atau tempat">
+    </div>
+    <div class="form-fld">
+      <label>Harga Tiket</label>
+      <input type="text" id="ev-price" placeholder="GRATIS  atau  Rp. 50.000">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-mcancel" onclick="closeModal('modal-event')">Batal</button>
+      <button class="btn-mconfirm" onclick="saveEvent()">Simpan Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Hapus Event ══ -->
+<div class="overlay" id="modal-del" onclick="overlayClose(event,'modal-del')">
+  <div class="modal" style="max-width:400px;text-align:center">
+    <div class="del-icon-wrap">
+      <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
+      </svg>
+    </div>
+    <div class="modal-ttl" style="margin-bottom:10px">Hapus Event?</div>
+    <div style="font-size:14px;color:var(--txt-light);margin-bottom:26px;line-height:1.6">
+      Event <strong id="del-ev-name"></strong> akan dihapus secara permanen dan tidak dapat dikembalikan.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-mcancel" onclick="closeModal('modal-del')">Batal</button>
+      <button class="btn-mconfirm danger" onclick="doDeleteEvent()">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast toast-info" id="toast"></div>
+
+<script>
+/* ── DATA ── */
+let payments = [
+  {id:1, name:'John Doe',    ini:'JD', evName:'Workshop Manajemen Proyek',         evDate:'20 Nov 2026', status:'Pending'},
+  {id:2, name:'John Doe',    ini:'JD', evName:'Workshop Manajemen Proyek',         evDate:'20 Nov 2026', status:'Verified'},
+  {id:3, name:'Siti Rahayu', ini:'SR', evName:'Seminar Nasional',                  evDate:'22 Nov 2026', status:'Pending'},
+  {id:4, name:'Budi Santoso',ini:'BS', evName:'Musyawarah Provinsi INKINDO Jatim', evDate:'19-20 Mei 2026', status:'Pending'},
+];
+
+let events = [
+  {id:1, name:'Workshop Manajemen Proyek Konstruksi 2026',   cat:'Workshop',   date:'12 Nov 2026', time:'08.15 – 10.30 WIB', reg:12},
+  {id:2, name:'Seminar Nasional Jasa Konstruksi Digital',    cat:'Seminar',    date:'14 Nov 2026', time:'09.00 – 12.00 WIB', reg:34},
+  {id:3, name:'Musyawarah Provinsi INKINDO Jawa Timur',      cat:'Musyawarah', date:'19-20 Mei 2026', time:'13.00-selesai', reg:87},
+  {id:4, name:'Seminar Etika Profesi Konsultan Indonesia',   cat:'Seminar',    date:'22 Nov 2026', time:'09.00 – 11.00 WIB', reg:56},
+  {id:5, name:'Workshop Sertifikasi Tenaga Ahli Konstruksi', cat:'Workshop',   date:'30 Nov 2026', time:'08.30 – 16.00 WIB', reg:23},
+];
+
+const TICKET_DB = {
+  'TKT-101': {name:'John Doe',    event:'Workshop Manajemen Proyek', seat:'A-12', status:'Verified'},
+  'TKT-202': {name:'Siti Rahayu', event:'Seminar Nasional',          seat:'B-07', status:'Verified'},
+  'TKT-303': {name:'Budi Santoso',event:'Musyawarah Provinsi',       seat:'C-03', status:'Pending'},
+};
+
+let editingEvId = null;
+let deletingEvId = null;
+
+/* ── PAGE SWITCH ── */
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const nb = document.getElementById('nb-' + name);
+  if (nb) nb.classList.add('active');
+  renderAll();
+}
+
+/* ── RENDER ALL ── */
+function renderAll() {
+  const pending = payments.filter(p => p.status === 'Pending').length;
+  document.getElementById('sv-perlu-verif').textContent = pending;
+  document.getElementById('sv-total-event').textContent = events.length;
+  renderOverview();
+  renderEventsTable();
+  renderPayTable('');
+}
+
+function renderOverview() {
+  document.getElementById('ov-payment-tbody').innerHTML =
+    payments.slice(0, 3).map(buildPayRow).join('');
+}
+
+function renderPayTable(filter) {
+  const list = filter ? payments.filter(p => p.status === filter) : payments;
+  document.getElementById('pay-tbody').innerHTML = list.map(buildPayRow).join('');
+}
+function filterPay(v) { renderPayTable(v); }
+
+function buildPayRow(p) {
+  const short = p.evName.length > 20 ? p.evName.slice(0,18) + '...' : p.evName;
+  const badge = p.status === 'Verified'
+    ? '<span class="badge badge-verified">Verified</span>'
+    : '<span class="badge badge-pending">Pending</span>';
+  const actions = p.status === 'Pending'
+    ? `<div class="action-row">
+         <button class="btn-approve" title="Setujui" onclick="approvePayment(${p.id})">✓</button>
+         <button class="btn-reject"  title="Tolak"   onclick="rejectPayment(${p.id})">✕</button>
+       </div>`
+    : `<span style="font-size:12px;color:var(--txt-light);font-style:italic">Sudah diproses</span>`;
+  return `<tr>
+    <td><div class="cell-participant">
+      <div class="avatar">${p.ini}</div>
+      <div><div class="pname">${p.name}</div><div class="pid">ID: ${100+p.id}</div></div>
+    </div></td>
+    <td><div class="ename">${short}</div><div class="edate">${p.evDate}</div></td>
+    <td><button class="btn-file" onclick="viewProof(${p.id})">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>Lihat File
+    </button></td>
+    <td>${badge}</td>
+    <td>${actions}</td>
+  </tr>`;
+}
+
+function renderEventsTable() {
+  const cc = {Seminar:'cat-seminar',Workshop:'cat-workshop',Musyawarah:'cat-musyawarah',Sertifikasi:'cat-sertifikasi'};
+  document.getElementById('ev-tbody').innerHTML = events.map(e => {
+    const sn = e.name.length > 36 ? e.name.slice(0,34)+'...' : e.name;
+    return `<tr>
+      <td>
+        <div style="font-size:14px;font-weight:700;color:var(--txt);margin-bottom:6px">${sn}</div>
+        <span class="cat-badge ${cc[e.cat]||'cat-seminar'}">${e.cat.toUpperCase()}</span>
+      </td>
+      <td><div class="ename">${e.date}</div><div class="edate">${e.time}</div></td>
+      <td><div class="reg-pill">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+        </svg>
+        ${e.reg} Orang
+      </div></td>
+      <td><div class="action-row">
+        <button class="btn-edit" title="Edit" onclick="editEvent(${e.id})">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4z"/>
+          </svg>
+        </button>
+        <button class="btn-del" title="Hapus" onclick="deleteEvent(${e.id})">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6M9 6V4h6v2"/>
+          </svg>
+        </button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── PAYMENT ACTIONS ── */
+function approvePayment(id) {
+  const p = payments.find(x => x.id === id);
+  if (!p) return;
+  p.status = 'Verified';
+  renderAll();
+  toast('✓ Pembayaran ' + p.name + ' berhasil diverifikasi', 'success');
+}
+function rejectPayment(id) {
+  payments = payments.filter(x => x.id !== id);
+  renderAll();
+  toast('Pembayaran ditolak dan dihapus dari daftar', 'error');
+}
+function viewProof(id) {
+  const p = payments.find(x => x.id === id);
+  document.getElementById('proof-fname').textContent = p.name.replace(' ','_').toLowerCase()+'.jpg';
+  document.getElementById('proof-detail').innerHTML =
+    `<b>Nama&nbsp;&nbsp;&nbsp;&nbsp;:</b> ${p.name}<br>
+     <b>Event&nbsp;&nbsp;&nbsp;&nbsp;:</b> ${p.evName}<br>
+     <b>Tanggal&nbsp;:</b> ${p.evDate}<br>
+     <b>Status&nbsp;&nbsp;&nbsp;:</b> ${p.status}`;
+  openModal('modal-proof');
+}
+
+/* ── EVENT CRUD ── */
+function openCreateEvent() {
+  editingEvId = null;
+  document.getElementById('modal-event-title').textContent = 'Buat Event Baru';
+  ['ev-name','ev-date','ev-start','ev-end','ev-loc','ev-price'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('ev-cat').value = 'Seminar';
+  openModal('modal-event');
+}
+function editEvent(id) {
+  const e = events.find(x => x.id === id);
+  editingEvId = id;
+  document.getElementById('modal-event-title').textContent = 'Edit Event';
+  document.getElementById('ev-name').value = e.name;
+  document.getElementById('ev-cat').value = e.cat;
+  document.getElementById('ev-loc').value = 'Gedung INKINDO JATIM';
+  openModal('modal-event');
+}
+function saveEvent() {
+  const name = document.getElementById('ev-name').value.trim();
+  if (!name) { toast('Nama event tidak boleh kosong', 'error'); return; }
+  const cat = document.getElementById('ev-cat').value;
+  const date = document.getElementById('ev-date').value;
+  const start = document.getElementById('ev-start').value;
+  const end = document.getElementById('ev-end').value;
+  if (editingEvId) {
+    const e = events.find(x => x.id === editingEvId);
+    e.name = name; e.cat = cat;
+    if (date) e.date = date;
+    if (start && end) e.time = start + ' – ' + end + ' WIB';
+    toast('✓ Event berhasil diperbarui', 'success');
+  } else {
+    events.push({id:Date.now(),name,cat,date:date||'TBD',time:(start&&end?start+' – '+end+' WIB':'TBD'),reg:0});
+    toast('✓ Event baru berhasil ditambahkan', 'success');
+  }
+  closeModal('modal-event');
+  renderAll();
+}
+function deleteEvent(id) {
+  deletingEvId = id;
+  const e = events.find(x => x.id === id);
+  document.getElementById('del-ev-name').textContent =
+    '"' + (e.name.length > 32 ? e.name.slice(0,30)+'...' : e.name) + '"';
+  openModal('modal-del');
+}
+function doDeleteEvent() {
+  events = events.filter(x => x.id !== deletingEvId);
+  closeModal('modal-del');
+  renderAll();
+  toast('Event berhasil dihapus', 'error');
+}
+
+/* ── CHECK-IN ── */
+function doSearchTicket() {
+  const val = document.getElementById('ticket-inp').value.trim().toUpperCase();
+  const box = document.getElementById('ci-result');
+  const icon = document.getElementById('ci-result-icon');
+  const ttl = document.getElementById('ci-result-title');
+  const sub = document.getElementById('ci-result-sub');
+  if (!val) { toast('Masukkan ID Tiket terlebih dahulu', 'error'); return; }
+  const found = TICKET_DB[val];
+  box.classList.remove('ok','fail');
+  if (found) {
+    box.classList.add('ok');
+    icon.style.background = '#d1fae5';
+    icon.innerHTML = `<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#059669" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+    ttl.textContent = found.name;
+    const sc = found.status === 'Verified' ? '#059669' : '#f59e0b';
+    sub.innerHTML = `<strong style="color:var(--blue)">${found.event}</strong><br>Kursi: ${found.seat}<br>Status: <span style="color:${sc};font-weight:700">${found.status}</span>`;
+    toast('✓ Check-in berhasil – ' + val, 'success');
+  } else {
+    box.classList.add('fail');
+    icon.style.background = '#fee2e2';
+    icon.innerHTML = `<svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+    ttl.textContent = 'Tiket Tidak Ditemukan';
+    sub.textContent = 'ID "' + val + '" tidak terdaftar. Periksa kembali dan coba lagi.';
+    toast('Tiket ' + val + ' tidak ditemukan', 'error');
+  }
+}
+
+/* ── MODALS ── */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function overlayClose(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+/* ── TOAST ── */
+function toast(msg, type = 'info') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast toast-' + type + ' show';
+  setTimeout(() => el.classList.remove('show'), 3400);
+}
+
+/* ── LOGOUT ── */
+function confirmLogout() {
+  window.location.href = 'index.html';
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ticket-inp')
+    .addEventListener('keydown', e => { if (e.key === 'Enter') doSearchTicket(); });
+});
+renderAll();
+</script>
+</body>
+</html>

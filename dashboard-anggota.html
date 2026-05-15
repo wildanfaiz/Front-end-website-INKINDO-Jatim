@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Dashboard Anggota – INKINDO Jawa Timur</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    :root{
+      --navy:#0a1a5c;--navy-mid:#0d1b5e;--blue:#1565d8;--blue-light:#2d80f2;
+      --green:#2ecb7b;--bg:#0e1a5c;--border:rgba(255,255,255,.1);
+      --txt:#f1f5f9;--txt-mid:rgba(255,255,255,.6);--txt-dim:rgba(255,255,255,.35);
+      --font:'Plus Jakarta Sans',sans-serif;
+    }
+    body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:100vh;min-width:1280px}
+    nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid #e2e8f0;height:72px;display:flex;align-items:center;padding:0 56px;gap:40px;box-shadow:0 1px 8px rgba(0,0,0,.06)}
+    .nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+    .nav-logo-img{width:44px;height:44px;object-fit:contain}
+    .nav-logo-words .top{font-size:14px;font-weight:800;color:#0a1a5c;line-height:1.1}
+    .nav-logo-words .bottom{font-size:9px;font-weight:700;color:#64748b;letter-spacing:2.5px;text-transform:uppercase}
+    .nav-links{display:flex;gap:36px;list-style:none;margin-left:auto}
+    .nav-links a{text-decoration:none;font-size:14px;font-weight:500;color:#475569;transition:color .2s}
+    .nav-links a:hover{color:#0a1a5c}
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .nav-dashboard-btn{display:flex;align-items:center;gap:8px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:10px;padding:8px 18px;font-family:var(--font);font-size:13px;font-weight:700;color:#0a1a5c;cursor:pointer;transition:background .2s}
+    .nav-dashboard-btn:hover{background:#e2e8f0}
+    .nav-logout-btn{width:38px;height:38px;border-radius:10px;background:#f1f5f9;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#64748b;transition:all .2s}
+    .nav-logout-btn:hover{background:#fee2e2;color:#ef4444;border-color:#fca5a5}
+    .page-wrap{padding:44px 56px 60px;display:grid;grid-template-columns:320px 1fr;gap:28px;max-width:1400px;margin:0 auto}
+    .profile-card{background:white;border-radius:24px;overflow:hidden;height:fit-content;box-shadow:0 4px 24px rgba(0,0,0,.12)}
+    .profile-card-top{height:110px;background:linear-gradient(135deg,#a8d4f5 0%,#c8e7fb 100%);position:relative}
+    .profile-avatar-wrap{position:absolute;bottom:-44px;left:50%;transform:translateX(-50%)}
+    .profile-avatar{width:88px;height:88px;border-radius:50%;background:#e2e8f0;border:4px solid white;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#334155;box-shadow:0 4px 16px rgba(0,0,0,.12)}
+    .profile-info{padding:56px 24px 20px;text-align:center}
+    .profile-name{font-size:20px;font-weight:800;color:#0f172a;margin-bottom:4px}
+    .profile-role{font-size:14px;color:#64748b;margin-bottom:12px}
+    .profile-badge{display:inline-flex;align-items:center;gap:6px;background:#d1fae5;color:#065f46;font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;margin-bottom:4px}
+    .profile-divider{height:1px;background:#f1f5f9;margin:16px 0 8px}
+    .profile-nav{padding:8px 16px 16px}
+    .profile-nav-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:12px;cursor:pointer;transition:background .2s;font-size:14px;font-weight:600;color:#475569;border:none;background:none;width:100%;text-align:left;font-family:var(--font)}
+    .profile-nav-item:hover{background:#f8fafc;color:#0f172a}
+    .profile-nav-item.active{background:#eff6ff;color:#1565d8}
+    .profile-nav-item svg{width:18px;height:18px;opacity:.7}
+    .profile-nav-item.active svg{opacity:1}
+    .content-col{display:flex;flex-direction:column;gap:20px}
+    .welcome-banner{background:linear-gradient(135deg,#152575 0%,#1565d8 60%,#2d80f2 100%);border-radius:20px;padding:36px 44px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+    .welcome-banner::before{content:'';position:absolute;right:-20px;top:-20px;width:200px;height:200px;background:rgba(255,255,255,.07);border-radius:50%}
+    .welcome-text h2{font-size:26px;font-weight:800;color:#fff;margin-bottom:8px}
+    .welcome-text p{font-size:14px;color:rgba(255,255,255,.7);line-height:1.6;max-width:480px}
+    .welcome-avatar-big{width:80px;height:80px;background:rgba(255,255,255,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1}
+    .content-panel{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:32px 36px}
+    #tab-profil{background:rgba(120,150,255,.13);border:1px solid rgba(255,255,255,.18)}
+    .panel-title{font-size:16px;font-weight:800;color:#fff;margin-bottom:4px}
+    .panel-sub{font-size:13px;color:var(--txt-mid);margin-bottom:24px}
+    .panel-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+
+    /* ── SMART EDIT BUTTON ── */
+    .btn-edit-toggle{display:flex;align-items:center;gap:8px;border:none;border-radius:10px;padding:10px 22px;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;min-width:130px;justify-content:center}
+    .btn-edit-toggle.mode-edit{background:var(--blue);color:#fff;box-shadow:0 4px 18px rgba(21,101,216,.4)}
+    .btn-edit-toggle.mode-edit:hover{background:#1044a8;transform:translateY(-1px)}
+    .btn-edit-toggle.mode-save{background:var(--green);color:#fff;box-shadow:0 4px 18px rgba(46,203,123,.4)}
+    .btn-edit-toggle.mode-save:hover{background:#1ab865;transform:translateY(-1px)}
+    .btn-edit-toggle.mode-saving{background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);cursor:not-allowed;transform:none}
+    .btn-edit-toggle svg{width:15px;height:15px;flex-shrink:0}
+    .spin{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── FORM GRID ── */
+    .profile-form-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px 20px}
+    .pf-field{display:flex;flex-direction:column;gap:6px;position:relative}
+    .pf-field label{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.06em;text-transform:uppercase}
+    .pf-input-wrap{position:relative}
+    .field-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:rgba(255,255,255,.3);pointer-events:none;transition:color .2s}
+    .pf-input-wrap input{width:100%;padding:13px 40px 13px 38px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.08);border-radius:11px;font-family:var(--font);font-size:14px;color:rgba(255,255,255,.45);outline:none;transition:all .25s;cursor:default}
+    .pf-input-wrap input[readonly]{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.45);cursor:default}
+    .pf-input-wrap input:not([readonly]){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff;cursor:text}
+    .pf-input-wrap input:not([readonly]):focus{border-color:var(--blue-light);background:rgba(255,255,255,.16);box-shadow:0 0 0 3px rgba(45,128,242,.2)}
+    .pf-input-wrap input:not([readonly])~.field-icon{color:rgba(255,255,255,.55)}
+    .pf-input-wrap input::placeholder{color:rgba(255,255,255,.22)}
+    .saved-tick{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--green);opacity:0;transition:opacity .3s;pointer-events:none}
+    .pf-field.saved .saved-tick{opacity:1}
+    .dirty-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:#f59e0b;border:2px solid #0e1a5c;opacity:0;transform:scale(0);transition:all .2s;pointer-events:none}
+    .pf-field.dirty .dirty-dot{opacity:1;transform:scale(1)}
+
+    /* ── CHANGE SUMMARY ── */
+    .change-summary{margin-top:18px;background:rgba(21,101,216,.15);border:1px solid rgba(21,101,216,.3);border-radius:12px;padding:12px 18px;display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.8);opacity:0;transform:translateY(6px);transition:all .3s;pointer-events:none;overflow:hidden;max-height:0}
+    .change-summary.visible{opacity:1;transform:translateY(0);max-height:56px;pointer-events:auto}
+    .change-summary svg{width:15px;height:15px;flex-shrink:0;color:#60a5fa}
+
+    /* ── TOAST ── */
+    #toastWrap{position:fixed;bottom:32px;right:36px;display:flex;flex-direction:column;gap:10px;z-index:99999;pointer-events:none}
+    .toast{display:flex;align-items:center;gap:12px;background:#1a2b5a;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px 18px;font-family:var(--font);font-size:13px;font-weight:600;color:#fff;box-shadow:0 8px 32px rgba(0,0,0,.4);pointer-events:auto;animation:tIn .35s cubic-bezier(.34,1.56,.64,1) both;min-width:260px;max-width:340px;position:relative;overflow:hidden}
+    .toast.success{border-left:4px solid var(--green)}
+    .toast.error{border-left:4px solid #ef4444}
+    .toast.info{border-left:4px solid var(--blue-light)}
+    .t-icon{width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .toast.success .t-icon{background:rgba(46,203,123,.18)}
+    .toast.error   .t-icon{background:rgba(239,68,68,.18)}
+    .toast.info    .t-icon{background:rgba(45,128,242,.18)}
+    .t-body{flex:1}
+    .t-title{font-size:13px;font-weight:700;color:#fff}
+    .t-msg{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
+    .t-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--green);animation:tBar 3s linear forwards}
+    .toast.error .t-bar{background:#ef4444}
+    .toast.info  .t-bar{background:var(--blue-light)}
+    @keyframes tIn{from{opacity:0;transform:translateX(36px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+    @keyframes tOut{to{opacity:0;transform:translateX(36px) scale(.9)}}
+    @keyframes tBar{from{width:100%}to{width:0%}}
+
+    /* ── EVENT LIST ── */
+    .event-list{display:flex;flex-direction:column;gap:14px}
+    .event-item{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px 20px;display:flex;align-items:center;gap:18px;transition:background .2s}
+    .event-item:hover{background:rgba(255,255,255,.12)}
+    .event-thumb{width:80px;height:60px;border-radius:12px;object-fit:cover;flex-shrink:0;background:#1e3a8a}
+    .event-item-info{flex:1;min-width:0}
+    .event-item-badges{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+    .badge-confirmed{background:rgba(46,203,123,.2);color:#2ecb7b;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px}
+    .badge-cat{font-size:12px;color:var(--txt-mid);font-weight:500}
+    .event-item-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .event-item-meta{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--txt-mid)}
+    .event-item-meta span{display:flex;align-items:center;gap:5px}
+    .event-item-meta svg{width:13px;height:13px;opacity:.6}
+    .btn-unduh{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:9px 16px;font-family:var(--font);font-size:13px;font-weight:600;color:rgba(255,255,255,.85);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s}
+    .btn-unduh:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.4);color:#fff}
+    .btn-unduh svg{width:15px;height:15px}
+    .cert-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .cert-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:20px}
+    .cert-card-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px}
+    .cert-card-date{font-size:12px;color:var(--txt-mid);margin-bottom:14px}
+    .btn-cert{display:inline-flex;align-items:center;gap:6px;background:rgba(21,101,216,.2);border:1px solid rgba(21,101,216,.4);border-radius:8px;padding:7px 14px;font-family:var(--font);font-size:12px;font-weight:700;color:#60a5fa;cursor:pointer;transition:background .2s}
+    .btn-cert:hover{background:rgba(21,101,216,.35)}
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .ticket-modal{background:#fff;border-radius:20px;width:360px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:modalIn .25s ease}
+    @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .modal-close{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:#ef4444;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;z-index:2;transition:background .2s}
+    .modal-close:hover{background:#dc2626}
+    .ticket-header{background:linear-gradient(135deg,#0a1a5c 0%,#152575 100%);border-radius:20px 20px 0 0;padding:24px 28px 22px;text-align:center}
+    .ticket-label{font-size:10px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.55);text-transform:uppercase;margin-bottom:10px}
+    .ticket-header h3{font-size:20px;font-weight:800;color:#fff;line-height:1.3}
+    .ticket-body{padding:28px 28px 24px;display:flex;flex-direction:column;gap:20px}
+    .ticket-qr-wrap{display:flex;justify-content:center}
+    .ticket-qr{width:160px;height:160px;border:2px solid #e2e8f0;border-radius:12px;padding:10px;background:#fff}
+    .ticket-qr-svg{width:100%;height:100%}
+    .ticket-code-section{text-align:center}
+    .ticket-code-label{font-size:10px;font-weight:700;letter-spacing:2px;color:#94a3b8;text-transform:uppercase;margin-bottom:8px}
+    .ticket-code-value{display:block;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:11px 20px;font-size:18px;font-weight:800;color:#0f172a;letter-spacing:2px;text-align:center}
+    .ticket-divider{border:none;border-top:1.5px dashed #e2e8f0}
+    .ticket-attendee{display:flex;align-items:center;gap:12px}
+    .ticket-attendee-icon{width:40px;height:40px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .att-label{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px}
+    .att-name{font-size:16px;font-weight:800;color:#0f172a}
+    .ticket-extra-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .ticket-extra-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px}
+    .tec-label{font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+    .tec-value{font-size:14px;font-weight:700;color:#0f172a}
+    .badge-vip{display:inline-block;background:#dbeafe;color:#1565d8;font-size:12px;font-weight:800;padding:4px 12px;border-radius:6px}
+    .ticket-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn-ticket-action{display:flex;align-items:center;justify-content:center;gap:7px;background:none;border:1.5px dashed #cbd5e1;border-radius:10px;padding:12px 16px;font-family:var(--font);font-size:13px;font-weight:700;color:#334155;cursor:pointer;transition:all .2s}
+    .btn-ticket-action:hover{background:#f1f5f9;border-color:#94a3b8}
+    .btn-ticket-action svg{width:15px;height:15px;opacity:.6}
+  </style>
+</head>
+<body>
+<div id="toastWrap"></div>
+
+<nav>
+  <a class="nav-logo" href="index.html">
+    <img src="logoinkindo.png" alt="INKINDO" class="nav-logo-img">
+    <div class="nav-logo-words"><div class="top">INKINDO<br>JAWA TIMUR</div><div class="bottom">Event Hub</div></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="index.html#events">Events</a></li>
+    <li><a href="index.html#calendar">Calendar</a></li>
+    <li><a href="index.html#contact">Contact Us</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="nav-dashboard-btn">
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Dashboard
+    </button>
+    <button class="nav-logout-btn" onclick="logout()">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div class="profile-card">
+    <div class="profile-card-top"><div class="profile-avatar-wrap"><div class="profile-avatar" id="avatarInitials">JD</div></div></div>
+    <div class="profile-info">
+      <div class="profile-name" id="profileName">John Doe</div>
+      <div class="profile-role" id="profileRole">Konsultan Hukum</div>
+      <div class="profile-badge">
+        <svg width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="#065f46" stroke-width="2.8"><polyline points="20 6 9 17 4 12"/></svg>
+        Anggota Valid
+      </div>
+    </div>
+    <div class="profile-divider"></div>
+    <div class="profile-nav">
+      <button class="profile-nav-item active" id="nav-profil" onclick="setTab('profil')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Identitas Profil
+      </button>
+      <button class="profile-nav-item" id="nav-jadwal" onclick="setTab('jadwal')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Jadwal Event Saya
+      </button>
+      <button class="profile-nav-item" id="nav-sertifikat" onclick="setTab('sertifikat')">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        E-Certificates
+      </button>
+    </div>
+  </div>
+
+  <div class="content-col">
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2 id="welcomeName">HALO, JOHN DOE!</h2>
+        <p>Selamat datang di dashboard Anda. Pantau terus jadwal kegiatan mendatang dan pastikan data diri valid untuk administrasi</p>
+      </div>
+      <div class="welcome-avatar-big">
+        <svg width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.4)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </div>
+    </div>
+
+    <!-- PROFIL TAB -->
+    <div class="content-panel" id="tab-profil">
+      <div class="panel-header-row">
+        <div>
+          <div class="panel-title">PROFIL DATA DIRI</div>
+          <div style="font-size:11px;color:var(--txt-dim);margin-top:3px" id="lastSaved">Belum ada perubahan tersimpan</div>
+        </div>
+        <button class="btn-edit-toggle mode-edit" id="btnToggle" onclick="handleToggle()">
+          <svg id="btnIco" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" width="15" height="15">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          <span id="btnTxt">Edit Data</span>
+        </button>
+      </div>
+
+      <div class="change-summary" id="summary">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <span id="summaryTxt">Ada <strong>0</strong> perubahan belum disimpan</span>
+      </div>
+
+      <div class="profile-form-grid" style="margin-top:20px">
+        <div class="pf-field" id="wrap-pfNama">
+          <label>Nama Lengkap</label>
+          <div class="pf-input-wrap">
+            <svg class="field-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" id="pfNama" placeholder="John Doe" readonly oninput="onInput(this)">
+            <svg class="saved-tick" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="dirty-dot"></div>
+        </div>
+        <div class="pf-field" id="wrap-pfBidang">
+          <label>Profesi</label>
+          <div class="pf-input-wrap">
+            <svg class="field-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2M8 7V5a2 2 0 0 0-4 0v2"/></svg>
+            <input type="text" id="pfBidang" placeholder="Konsultan Hukum" readonly oninput="onInput(this)">
+            <svg class="saved-tick" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="dirty-dot"></div>
+        </div>
+        <div class="pf-field" id="wrap-pfEmail">
+          <label>Email Pribadi</label>
+          <div class="pf-input-wrap">
+            <svg class="field-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="pfEmail" placeholder="john@example.com" readonly oninput="onInput(this)">
+            <svg class="saved-tick" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="dirty-dot"></div>
+        </div>
+        <div class="pf-field" id="wrap-pfInstansi">
+          <label>Perusahaan / Instansi</label>
+          <div class="pf-input-wrap">
+            <svg class="field-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <input type="text" id="pfInstansi" placeholder="INKINDO JATIM" readonly oninput="onInput(this)">
+            <svg class="saved-tick" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="dirty-dot"></div>
+        </div>
+        <div class="pf-field" id="wrap-pfWa">
+          <label>No. HP</label>
+          <div class="pf-input-wrap">
+            <svg class="field-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 8 8l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 23 18"/></svg>
+            <input type="tel" id="pfWa" placeholder="08x-xxxx-xxxx" readonly oninput="onInput(this)">
+            <svg class="saved-tick" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="dirty-dot"></div>
+        </div>
+        <div class="pf-field" id="wrap-pfEmailKantor">
+          <label>Email Kantor</label>
+          <div class="pf-input-wrap">
+            <svg class="field-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20M8 10v10M16 10v10"/></svg>
+            <input type="email" id="pfEmailKantor" placeholder="john@inkindo.org" readonly oninput="onInput(this)">
+            <svg class="saved-tick" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="dirty-dot"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JADWAL TAB -->
+    <div class="content-panel" id="tab-jadwal" style="display:none">
+      <div class="panel-title">JADWAL EVENT AKTIF</div>
+      <div class="panel-sub">Daftar event terdaftar anda yang akan datang</div>
+      <div class="event-list" id="eventList"></div>
+    </div>
+
+    <!-- SERTIFIKAT TAB -->
+    <div class="content-panel" id="tab-sertifikat" style="display:none">
+      <div class="panel-title">E-CERTIFICATES</div>
+      <div class="panel-sub">Sertifikat digital dari event yang telah Anda ikuti</div>
+      <div class="cert-grid">
+        <div class="cert-card">
+          <div class="cert-card-title">Seminar Nasional Konsultansi 2025</div>
+          <div class="cert-card-date">12 November 2025 · Surabaya</div>
+          <button class="btn-cert"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Unduh PDF</button>
+        </div>
+        <div class="cert-card">
+          <div class="cert-card-title">Workshop Digital Transformation 2025</div>
+          <div class="cert-card-date">8 September 2025 · Malang</div>
+          <button class="btn-cert"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Unduh PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKET MODAL -->
+<div class="modal-overlay" id="ticketModal">
+  <div class="ticket-modal">
+    <button class="modal-close" onclick="closeTicket()"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    <div class="ticket-header">
+      <div class="ticket-label">E-TICKET RESMI INKINDO JATIM</div>
+      <h3 id="modalTitle">MUSPROV 2026</h3>
+    </div>
+    <div class="ticket-body">
+      <div class="ticket-qr-wrap"><div class="ticket-qr">
+        <svg viewBox="0 0 100 100" class="ticket-qr-svg" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="5" width="30" height="30" rx="2" fill="none" stroke="#000" stroke-width="3"/><rect x="11" y="11" width="18" height="18" rx="1" fill="#000"/>
+          <rect x="65" y="5" width="30" height="30" rx="2" fill="none" stroke="#000" stroke-width="3"/><rect x="71" y="11" width="18" height="18" rx="1" fill="#000"/>
+          <rect x="5" y="65" width="30" height="30" rx="2" fill="none" stroke="#000" stroke-width="3"/><rect x="11" y="71" width="18" height="18" rx="1" fill="#000"/>
+          <rect x="40" y="5" width="6" height="6" fill="#000"/><rect x="50" y="5" width="6" height="6" fill="#000"/>
+          <rect x="40" y="13" width="4" height="4" fill="#000"/><rect x="48" y="13" width="6" height="6" fill="#000"/>
+          <rect x="40" y="40" width="5" height="5" fill="#000"/><rect x="48" y="38" width="8" height="8" fill="#000"/>
+          <rect x="59" y="40" width="5" height="5" fill="#000"/><rect x="75" y="40" width="4" height="4" fill="#000"/>
+          <rect x="82" y="38" width="8" height="8" fill="#000"/><rect x="40" y="50" width="6" height="6" fill="#000"/>
+          <rect x="57" y="50" width="8" height="5" fill="#000"/><rect x="68" y="48" width="4" height="8" fill="#000"/>
+          <rect x="40" y="58" width="4" height="8" fill="#000"/><rect x="47" y="58" width="8" height="5" fill="#000"/>
+          <rect x="40" y="68" width="5" height="5" fill="#000"/><rect x="48" y="70" width="7" height="4" fill="#000"/>
+          <rect x="66" y="68" width="6" height="6" fill="#000"/><rect x="82" y="68" width="8" height="8" fill="#000"/>
+          <rect x="66" y="86" width="8" height="4" fill="#000"/><rect x="78" y="88" width="5" height="5" fill="#000"/>
+        </svg>
+      </div></div>
+      <div class="ticket-code-section">
+        <div class="ticket-code-label">Manual Entry Code</div>
+        <span class="ticket-code-value" id="modalCode">TKT – 1001</span>
+      </div>
+      <hr class="ticket-divider">
+      <div class="ticket-attendee">
+        <div class="ticket-attendee-icon"><svg fill="none" viewBox="0 0 24 24" stroke="#1565d8" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+        <div class="ticket-attendee-meta">
+          <div class="att-label">Nama Peserta</div>
+          <div class="att-name" id="modalName">JOHN DOE</div>
+        </div>
+      </div>
+      <div class="ticket-extra-row">
+        <div class="ticket-extra-card"><div class="tec-label">Kategori</div><div class="tec-value"><span class="badge-vip" id="modalKat">VIP</span></div></div>
+        <div class="ticket-extra-card"><div class="tec-label">Instansi</div><div class="tec-value" id="modalInst">PT. BANGUN PERSADA JATIM</div></div>
+      </div>
+      <div class="ticket-actions">
+        <button class="btn-ticket-action" onclick="showToast('info','Mengunduh PDF...','E-tiket akan segera diunduh.')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 11h10M7 15h6"/></svg>Unduh PDF
+        </button>
+        <button class="btn-ticket-action" onclick="showToast('info','Mengirim tiket...','Tiket dikirim ke WA & email Anda.')">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Kirim WA/Email
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── TOAST ── */
+function showToast(type, title, msg, dur=3000){
+  const icons={success:'<svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#2ecb7b" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',error:'<svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',info:'<svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="#60a5fa" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'};
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<div class="t-icon">${icons[type]}</div><div class="t-body"><div class="t-title">${title}</div>${msg?`<div class="t-msg">${msg}</div>`:''}</div><div class="t-bar" style="animation-duration:${dur}ms"></div>`;
+  document.getElementById('toastWrap').appendChild(t);
+  setTimeout(()=>{t.style.animation='tOut .3s ease forwards';setTimeout(()=>t.remove(),320);},dur);
+}
+
+/* ── INIT ── */
+const sName=sessionStorage.getItem('userName')||'John Doe';
+const sEmail=sessionStorage.getItem('userEmail')||'';
+const sInst=sessionStorage.getItem('userInstansi')||'INKINDO JATIM';
+const getInit=n=>n.trim().split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+document.getElementById('avatarInitials').textContent=getInit(sName);
+document.getElementById('profileName').textContent=sName;
+document.getElementById('welcomeName').textContent='HALO, '+sName.toUpperCase()+'!';
+document.getElementById('pfNama').value=sName;
+document.getElementById('pfEmail').value=sEmail;
+document.getElementById('pfInstansi').value=sInst;
+
+let snap={},isEdit=false;
+const fids=['pfNama','pfBidang','pfEmail','pfInstansi','pfWa','pfEmailKantor'];
+function takeSnap(){fids.forEach(id=>{snap[id]=document.getElementById(id).value});}
+takeSnap();
+
+/* ── EDIT TOGGLE ── */
+function handleToggle(){isEdit?doSave():startEdit();}
+
+function startEdit(){
+  isEdit=true;
+  fids.forEach(id=>document.getElementById(id).removeAttribute('readonly'));
+  const b=document.getElementById('btnToggle');
+  b.className='btn-edit-toggle mode-save';
+  b.innerHTML=`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" width="15" height="15"><polyline points="20 6 9 17 4 12"/></svg><span>Simpan Data</span>`;
+  updateSummary();
+  showToast('info','Mode Edit Aktif','Ubah data lalu klik Simpan.',2200);
+  setTimeout(()=>document.getElementById('pfNama').focus(),60);
+}
+
+function onInput(inp){
+  if(!isEdit)return;
+  const w=document.getElementById('wrap-'+inp.id);
+  if(w){w.classList.toggle('dirty',inp.value!==snap[inp.id]);w.classList.remove('saved');}
+  updateSummary();
+}
+
+function updateSummary(){
+  const n=document.querySelectorAll('.pf-field.dirty').length;
+  const s=document.getElementById('summary');
+  if(n>0){
+    document.getElementById('summaryTxt').innerHTML=`Ada <strong>${n} field</strong> yang diubah dan belum disimpan`;
+    s.classList.add('visible');
+  } else {s.classList.remove('visible');}
+}
+
+function doSave(){
+  const nama=document.getElementById('pfNama').value.trim();
+  const email=document.getElementById('pfEmail').value.trim();
+  if(!nama){showToast('error','Nama wajib diisi','Nama lengkap tidak boleh kosong.');document.getElementById('pfNama').focus();return;}
+  if(email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast('error','Email tidak valid','Periksa format email pribadi Anda.');document.getElementById('pfEmail').focus();return;}
+
+  /* saving state */
+  const b=document.getElementById('btnToggle');
+  b.className='btn-edit-toggle mode-saving';b.disabled=true;
+  b.innerHTML=`<div class="spin"></div><span>Menyimpan...</span>`;
+
+  setTimeout(()=>{
+    const profesi=document.getElementById('pfBidang').value.trim();
+    const inst=document.getElementById('pfInstansi').value.trim();
+    sessionStorage.setItem('userName',nama);
+    sessionStorage.setItem('userEmail',email);
+    sessionStorage.setItem('userInstansi',inst);
+    document.getElementById('profileName').textContent=nama;
+    document.getElementById('profileRole').textContent=profesi||'Konsultan';
+    document.getElementById('welcomeName').textContent='HALO, '+nama.toUpperCase()+'!';
+    document.getElementById('avatarInitials').textContent=getInit(nama);
+    /* ticks */
+    document.querySelectorAll('.pf-field.dirty').forEach(f=>{
+      f.classList.remove('dirty');f.classList.add('saved');
+      setTimeout(()=>f.classList.remove('saved'),3500);
+    });
+    takeSnap();
+    const ts=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('lastSaved').textContent='Tersimpan pukul '+ts;
+    /* reset */
+    fids.forEach(id=>document.getElementById(id).setAttribute('readonly',true));
+    isEdit=false;
+    document.getElementById('summary').classList.remove('visible');
+    b.disabled=false;b.className='btn-edit-toggle mode-edit';
+    b.innerHTML=`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Edit Data</span>`;
+    showToast('success','Data berhasil disimpan','Profil Anda telah diperbarui pukul '+ts+'.');
+  },1000);
+}
+
+/* ── TAB ── */
+function setTab(t){
+  if(t!=='profil'&&isEdit){fids.forEach(id=>document.getElementById(id).setAttribute('readonly',true));isEdit=false;document.getElementById('summary').classList.remove('visible');document.getElementById('btnToggle').className='btn-edit-toggle mode-edit';document.getElementById('btnToggle').innerHTML=`<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" width="15" height="15"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Edit Data</span>`;}
+  ['profil','jadwal','sertifikat'].forEach(x=>{document.getElementById('tab-'+x).style.display=x===t?'block':'none';const el=document.getElementById('nav-'+x);if(el)el.classList.toggle('active',x===t);});
+}
+
+/* ── EVENTS ── */
+const evs=[{title:'Musyawarah Provinsi INKINDO Jawa Timur',cat:'Musyawarah',date:'19-20 Mei 2026',time:'13.00-selesai',img:'FotoMusprof2026.png',code:'TKT – 1001',mTitle:'MUSPROV 2026<br>(Musyawarah Provinsi Jawa Timur 2026)',kat:'VIP',inst:'Hotel Mercure Grand Mirama, Surabaya'}];
+(function(){
+  document.getElementById('eventList').innerHTML=evs.map((e,i)=>`
+    <div class="event-item">
+      <img class="event-thumb" src="${e.img}" alt="${e.title}" onerror="this.style.background='#1e3a8a';this.removeAttribute('src')">
+      <div class="event-item-info">
+        <div class="event-item-badges"><span class="badge-confirmed">Confirmed</span><span class="badge-cat">${e.cat}</span></div>
+        <div class="event-item-title">${e.title}</div>
+        <div class="event-item-meta">
+          <span><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>${e.date}</span>
+          <span><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>${e.time}</span>
+        </div>
+      </div>
+      <button class="btn-unduh" onclick="openTkt(${i})"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2M8 7V5a2 2 0 0 0-4 0v2"/></svg>Unduh Tiket</button>
+    </div>`).join('');
+})();
+
+function openTkt(i){
+  const e=evs[i],n=sessionStorage.getItem('userName')||'John Doe';
+  document.getElementById('modalTitle').innerHTML=e.mTitle;
+  document.getElementById('modalCode').textContent=e.code;
+  document.getElementById('modalName').textContent=n.toUpperCase();
+  document.getElementById('modalKat').textContent=e.kat;
+  document.getElementById('modalInst').textContent=e.inst;
+  document.getElementById('ticketModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeTicket(){document.getElementById('ticketModal').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('ticketModal').addEventListener('click',function(e){if(e.target===this)closeTicket();});
+function logout(){if(confirm('Yakin ingin keluar?')){sessionStorage.clear();window.location.href='index.html';}}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTicket();});
+</script>
+</body>
+</html>
